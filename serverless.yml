@@ -7,6 +7,7 @@ frameworkVersion: "4"
 provider:
   name: aws
   runtime: nodejs20.x
+  provider: ap-southeast-1
 
 functions:
   kristine:
@@ -15,3 +16,16 @@ functions:
       - httpApi:
           path: /kristine
           method: get
+      - sqs:
+          arn: arn:aws:sqs:ap-southeast-1:255945442255:kristinesqs
+          batchSize: 10
+          maximumBatchingWindow: 60
+          functionResponseType: ReportBatchItemFailures
+    handler: users.handler
+    events:
+      - s3:
+          bucket: photos
+          event: s3:ObjectRemoved:*
+
+plugins:
+  - serverless-offline
